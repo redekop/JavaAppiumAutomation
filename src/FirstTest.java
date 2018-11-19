@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
+import java.util.List;
 
 import static java.lang.Thread.sleep;
 
@@ -24,7 +25,7 @@ public class FirstTest {
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
         capabilities.setCapability("platformName", "Android");
-        capabilities.setCapability("deviceName", "GoogleNexus5");
+        capabilities.setCapability("deviceName", "Samsung");
         capabilities.setCapability("platformVersion", "6.0");
         capabilities.setCapability("automationName", "appium");
         capabilities.setCapability("appPackage", "org.wikipedia");
@@ -80,6 +81,26 @@ public class FirstTest {
     }
 
 
+    @Test
+    public void testSearchSomeWord() {
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err click on search", 10);
+        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Some word","error input value", 10);
+
+        assert waitForAllElementsPresent(By.id("org.wikipedia:id/page_list_item_container"), "", 10).size() >= 1;
+
+        waitForElementAndClick(By.id("org.wikipedia:id/search_close_btn"), "err_id_close_btn", 10);
+
+        waitForElementNotPresent(By.id("org.wikipedia:id/page_list_item_container"), "search_close_btn is visible", 10);
+    }
+
+
+
+
+
+
+
+
+
     private String checkText(By by, String err_msg, long timeoutInSeconds, String attribute) {
         WebElement element = waitForElementPresent(by, err_msg, timeoutInSeconds);
         String value = element.getAttribute(attribute);
@@ -92,6 +113,14 @@ public class FirstTest {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(err_msg + "\n");
         return wait.until(ExpectedConditions.presenceOfElementLocated(by));
+    }
+
+
+    private List waitForAllElementsPresent(By by, String err_msg, long timeoutInSeconds) {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+        wait.withMessage(err_msg + "\n");
+        List elements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(by));
+        return elements;
     }
 
 
