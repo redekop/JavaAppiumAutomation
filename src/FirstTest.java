@@ -68,6 +68,23 @@ public class FirstTest {
     }
 
 
+    @Test
+    public void testCheckTextSearch() {
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 10);
+
+        Assert.assertEquals("err","Search…",checkText(
+                By.id("org.wikipedia:id/search_src_text"),
+                "err_text",
+                10,
+                "text"));
+    }
+
+
+    private String checkText(By by, String err_msg, long timeoutInSeconds, String attribute) {
+        WebElement element = waitForElementPresent(by, err_msg, timeoutInSeconds);
+        String value = element.getAttribute(attribute);
+        return value;
+    }
 
 
 
