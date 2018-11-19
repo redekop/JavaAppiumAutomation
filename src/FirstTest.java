@@ -19,6 +19,8 @@ public class FirstTest {
 
     private AppiumDriver driver;
 
+    private String someWord = "word";
+
 
     @Before
     public void setUp() throws Exception {
@@ -94,6 +96,19 @@ public class FirstTest {
     }
 
 
+    @Test
+    public void testConteinsSomeWord() {
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err click on search", 10);
+        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), someWord,"error input value", 10);
+
+        List <WebElement> elements = waitForAllElementsPresent(By.id("org.wikipedia:id/page_list_item_title"), "err", 10);
+
+        for(WebElement element : elements){
+            assert element.getText().toUpperCase().contains(someWord.toUpperCase());
+        }
+
+    }
+
 
 
 
@@ -116,10 +131,11 @@ public class FirstTest {
     }
 
 
-    private List waitForAllElementsPresent(By by, String err_msg, long timeoutInSeconds) {
+    private List<WebElement> waitForAllElementsPresent(By by, String err_msg, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(err_msg + "\n");
-        List elements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(by));
+        wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(by));
+        List<WebElement> elements = driver.findElements(by);
         return elements;
     }
 
