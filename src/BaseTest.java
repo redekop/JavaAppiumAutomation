@@ -156,11 +156,20 @@ public class BaseTest {
     }
 
 
-
-
     protected String getTitleArticle() {
         WebElement element_title = waitForElementPresent(By.id("org.wikipedia:id/view_page_title_text"), "sdfsfsf", 15);
         return element_title.getAttribute("text");
+    }
+
+
+    protected void assertElementNotPresent(By by, String err_msg) {
+        int amount_of_elements = getAmountOfElements(by);
+        if (amount_of_elements > 0) {
+            String default_msg = "An element '" +by.toString()+"' supposed to be not present";
+            throw new AssertionError(default_msg + "" + err_msg);
+
+        }
+
     }
 
 

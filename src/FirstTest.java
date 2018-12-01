@@ -150,6 +150,23 @@ public class FirstTest extends BaseTest {
 
 
     @Test
+    public void testAmountOfEmptySearch() {
+        String seacrcLine = "dfghjklasdfertyuio";
+        String searchResultLocator = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_container']";
+        String emptyResultLabel = "//*[@text='No results found']";
+
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
+        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), seacrcLine,"error_input", 7);
+
+        waitForElementPresent(By.xpath(emptyResultLabel), "Can not find empty result", 20);
+
+        assertElementNotPresent(By.xpath(searchResultLocator), "We have found some results result by request " + seacrcLine);
+
+    }
+
+
+
+    @Test
     public void saveTwoArticleToMyList() {
         String listName = "Learning programming";
 
