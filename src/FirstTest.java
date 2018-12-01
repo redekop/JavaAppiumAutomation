@@ -165,6 +165,19 @@ public class FirstTest extends BaseTest {
     }
 
 
+    @Test
+    public void assertTitleTest() {
+        String search_word = "JavaScript";
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
+        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), search_word,"error_input", 7);
+        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+                "err_id_search", 30);
+
+        assertElementPresentWithoutWait(By.id("org.wikipedia:id/view_page_title_text"), search_word, "Title should be - " + search_word);
+
+    }
+
+
 
     @Test
     public void saveTwoArticleToMyList() {
