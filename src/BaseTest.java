@@ -4,10 +4,7 @@ import io.appium.java_client.android.AndroidDriver;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -17,7 +14,7 @@ import java.util.List;
 
 public class BaseTest {
 
-    private AppiumDriver driver;
+    protected AppiumDriver driver;
 
     @Before
     public void setUp() throws Exception {
@@ -30,7 +27,15 @@ public class BaseTest {
         capabilities.setCapability("appActivity", ".main.MainActivity");
         capabilities.setCapability("app", "E:\\GIT\\JavaAppiumAutomation\\apk\\org.wikipedia.apk");
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+
+        //Как вариант перед каждым тестом проверять текущую ориентацию
+        ScreenOrientation screenOrientation = driver.getOrientation();
+        if (screenOrientation == ScreenOrientation.LANDSCAPE) {
+            driver.rotate(ScreenOrientation.PORTRAIT);
+        }
     }
+
+
 
     protected void swipeElementToLeft(By by, String err_msg) {
         WebElement element = waitForElementPresent(by, err_msg, 15);
@@ -150,9 +155,9 @@ public class BaseTest {
     }
 
 
-    protected String getTitleArticle() {
-        WebElement element_title = waitForElementPresent(By.id("org.wikipedia:id/view_page_title_text"), "sdfsfsf", 15);
-        return element_title.getAttribute("text");
+    protected String getElementAttribute(By by, String attribute, String err_msg, long timeout) {
+        WebElement element_title = waitForElementPresent(by, err_msg, timeout);
+        return element_title.getAttribute(attribute);
     }
 
 

@@ -1,6 +1,7 @@
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ScreenOrientation;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
@@ -170,13 +171,44 @@ public class FirstTest extends BaseTest {
         String search_word = "JavaScript";
         waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
         waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), search_word,"error_input", 7);
-        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Programming language']"),
                 "err_id_search", 30);
 
         assertElementPresentWithoutWait(By.id("org.wikipedia:id/view_page_title_text"), search_word, "Title should be - " + search_word);
 
     }
 
+
+    @Test
+    public void testChangeScreenOrientationOnSearchResults() {
+        searchAndOpenArticle("Java", "Object-oriented programming language");
+        String title_before_rotation = getElementAttribute(
+                By.id("org.wikipedia:id/view_page_title_text"),"text", "Can not find title of article", 15);
+
+        driver.rotate(ScreenOrientation.LANDSCAPE);
+        String title_after_rotation = getElementAttribute(
+                By.id("org.wikipedia:id/view_page_title_text"),"text", "Can not find title of article", 15);
+        Assert.assertEquals("article title have been change after screen rotation", title_before_rotation, title_after_rotation);
+
+        driver.rotate(ScreenOrientation.PORTRAIT);
+        String title_after_second_rotation = getElementAttribute(
+                By.id("org.wikipedia:id/view_page_title_text"),"text", "Can not find title of article", 15);
+        Assert.assertEquals("article title have been change after screen rotation", title_before_rotation, title_after_second_rotation);
+    }
+
+    
+    @Test
+    public void testCheckSearchArticleInBackgraund() {
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
+        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Java","error_input", 7);
+        waitForElementPresent(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+                "err_id_search", 30);
+
+        driver.runAppInBackground(2);
+
+        waitForElementPresent(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+                "err_id_search", 30);
+    }
 
 
     @Test
@@ -204,7 +236,9 @@ public class FirstTest extends BaseTest {
         //Переходим в оставшуюся статью
         waitForElementAndClick(By.xpath("//*[@text='JavaScript']"), "Can not find name article", 15);
 
-        Assert.assertEquals("Article titles do not match","JavaScript",getTitleArticle());
+        Assert.assertEquals("Article titles do not match",
+                "JavaScript",
+                getElementAttribute(By.id("org.wikipedia:id/view_page_title_text"),"text", "Can not find attribute", 15));
     }
 
 
