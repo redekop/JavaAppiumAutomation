@@ -1,10 +1,12 @@
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -15,27 +17,9 @@ import java.util.List;
 
 import static java.lang.Thread.sleep;
 
-public class FirstTest {
-
-    private AppiumDriver driver;
+public class FirstTest extends BaseTest {
 
     private String someWord = "word";
-
-
-    @Before
-    public void setUp() throws Exception {
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-
-        capabilities.setCapability("platformName", "Android");
-        capabilities.setCapability("deviceName", "Samsung");
-        capabilities.setCapability("platformVersion", "6.0");
-        capabilities.setCapability("automationName", "appium");
-        capabilities.setCapability("appPackage", "org.wikipedia");
-        capabilities.setCapability("appActivity", ".main.MainActivity");
-        capabilities.setCapability("app", "E:\\GIT\\JavaAppiumAutomation\\apk\\org.wikipedia.apk");
-
-        driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
-    }
 
 
     @Test
@@ -111,69 +95,70 @@ public class FirstTest {
 
 
 
+    @Test
+    public void testSwipeArcicle() {
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 10);
+        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Appium","error_input", 7);
+        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='Appium']"),
+                "err_id_search", 10);
+
+        WebElement element_title = waitForElementPresent(By.id("org.wikipedia:id/view_page_title_text"), "sdfsfsf", 15);
+        element_title.getAttribute("text");
+
+        swipeUpToFindElement(By.xpath("//*[@text='View page in browser1']"), "err", 20);
+
+    }
 
 
+    @Test
+    public void saveFirstArticleToMyList() {
+        //ищем нужную статью, открываем
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
+        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Java","error_input", 7);
+        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+                "err_id_search", 30);
+         waitForElementPresent(By.id("org.wikipedia:id/view_page_title_text"), "sdfsfsf", 15);
 
+        //Добавляем статью в папку
+        waitForElementAndClick(By.xpath("//android.widget.ImageView[@content-desc='More options']"), "errr", 30);
+        waitForElementAndClick(By.xpath("//*[@text='Add to reading list']"), "errrrrr", 15);
+        waitForElementAndClick(By.id("org.wikipedia:id/onboarding_button"), "errrr", 15);
+        //чистим поле
+        waitForElementAndClear(By.id("org.wikipedia:id/text_input"), "errr", 15);
+        //заполняем
+        waitForElementAndKeys(By.id("org.wikipedia:id/text_input"), "Learning programming","errr", 15);
+        //Сохраняем статью
+        waitForElementAndClick(By.xpath("//*[@text='OK']"), "errrrrr", 15);
 
+        //Закрываем статью
+        waitForElementAndClick(By.xpath("//android.widget.ImageButton[@content-desc='Navigate up']"), "errr", 15);
+        //Переходим в списки
+        waitForElementAndClick(By.xpath("//android.widget.FrameLayout[@content-desc='My lists']"), "errr", 15);
+        //Удаляем список
+        waitForElementAndClick(By.xpath("//*[@text='Learning programming']"), "errrrrr", 30);
 
-    private String checkText(By by, String err_msg, long timeoutInSeconds, String attribute) {
-        WebElement element = waitForElementPresent(by, err_msg, timeoutInSeconds);
-        String value = element.getAttribute(attribute);
-        return value;
+        swipeElementToLeft(By.xpath("//*[@text='Java (programming language)']"), "sdfsfsf");
+        waitForElementNotPresent(By.xpath("//*[@text='Java (programming language)']"), "sdfsfsf", 15);
     }
 
 
 
-    private WebElement waitForElementPresent(By by, String err_msg, long timeoutInSeconds) {
-        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
-        wait.withMessage(err_msg + "\n");
-        return wait.until(ExpectedConditions.presenceOfElementLocated(by));
+    @Test
+    public void testAmountOfNotEmptySearch() {
+        String seacrcLine = "Linkin park Discography";
+        String searchResultLocator = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_container']";
+
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
+        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), seacrcLine,"error_input", 7);
+        waitForElementPresent(By.xpath(searchResultLocator), "Can not find anything by request " + seacrcLine, 20);
+
+        int amountOfSearchResults = getAmountOfElements(By.xpath(searchResultLocator));
+
+        Assert.assertTrue("We found too few results!", amountOfSearchResults>0);
+
     }
 
-
-    private List<WebElement> waitForAllElementsPresent(By by, String err_msg, long timeoutInSeconds) {
-        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
-        wait.withMessage(err_msg + "\n");
-        wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(by));
-        List<WebElement> elements = driver.findElements(by);
-        return elements;
-    }
+    
 
 
-
-    private WebElement waitForElementAndClick(By by, String err_msg, long timeoutInSeconds) {
-        WebElement element = waitForElementPresent(by, err_msg, timeoutInSeconds);
-        element.click();
-        return element;
-    }
-
-    private WebElement waitForElementAndKeys(By by, String value, String err_msg, long timeoutInSeconds) {
-        WebElement element = waitForElementPresent(by, err_msg, timeoutInSeconds);
-        element.sendKeys(value);
-        return element;
-    }
-
-
-
-    private boolean waitForElementNotPresent(By by, String err_msg, long timeoutInSeconds) {
-        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
-        wait.withMessage(err_msg + "\n");
-        return wait.until(ExpectedConditions.invisibilityOfElementLocated(by));
-    }
-
-
-    private WebElement waitForElementAndClear(By by, String err_msg, long timeoutInSeconds) {
-        WebElement element = waitForElementPresent(by, err_msg, timeoutInSeconds);
-        element.clear();
-        return element;
-    }
-
-
-
-
-
-    @After
-    public void tearDown() {
-        driver.quit();
-    }
 }
