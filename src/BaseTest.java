@@ -2,6 +2,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -121,6 +122,47 @@ public class BaseTest {
         element.clear();
         return element;
     }
+
+    protected void searchAndOpenArticle(String searchWord, String nameTitleArticle) {
+        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "Can not find 'search wikipedia' input", 20);
+        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), searchWord,"Can not find search input", 7);
+        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='"+nameTitleArticle+"']"),
+                "Can not find search article", 30);
+        waitForElementPresent(By.id("org.wikipedia:id/view_page_title_text"), "Can not find article title", 15);
+    }
+
+    protected void openOptionMenu(String nameMenuOption) {
+        //Нажимаем кнопку с опциями
+        waitForElementAndClick(By.xpath("//android.widget.ImageView[@content-desc='More options']"), "Can not find button to open options", 30);
+        //Выбираем соответствующую опцию
+        waitForElementAndClick(By.xpath("//*[@text='"+nameMenuOption+"']"), "Can not find option", 15);
+    }
+
+
+    protected void createNewReadingListAndSaveArticle(String nameFolder) {
+        openOptionMenu("Add to reading list");
+        waitForElementAndClick(By.id("org.wikipedia:id/onboarding_button"), "Can not find 'Go it' tip overlay", 15);
+        //Чистим поле
+        waitForElementAndClear(By.id("org.wikipedia:id/text_input"), "Can not find input to set name of article folder", 15);
+        //Заполняем название папки
+        waitForElementAndKeys(By.id("org.wikipedia:id/text_input"), ""+nameFolder+"","Can not put text into folder input", 15);
+        //Сохраняем статью
+        waitForElementAndClick(By.xpath("//*[@text='OK']"), "Can not press 'OK' button", 15);
+    }
+
+
+    protected void closeArticle() {
+        waitForElementAndClick(By.xpath("//android.widget.ImageButton[@content-desc='Navigate up']"), "Can not close article", 15);
+    }
+
+
+
+
+    protected String getTitleArticle() {
+        WebElement element_title = waitForElementPresent(By.id("org.wikipedia:id/view_page_title_text"), "sdfsfsf", 15);
+        return element_title.getAttribute("text");
+    }
+
 
     @After
     public void tearDown() {

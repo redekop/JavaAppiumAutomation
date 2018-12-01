@@ -1,18 +1,8 @@
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.TouchAction;
-import io.appium.java_client.android.AndroidDriver;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.net.URL;
 import java.util.List;
 
 import static java.lang.Thread.sleep;
@@ -158,7 +148,34 @@ public class FirstTest extends BaseTest {
 
     }
 
-    
+
+    @Test
+    public void saveTwoArticleToMyList() {
+        String listName = "Learning programming";
+
+        //Сохраняем две статьи в одну папку
+        searchAndOpenArticle("Java", "Object-oriented programming language");
+        createNewReadingListAndSaveArticle("Learning programming");
+        closeArticle();
+
+        searchAndOpenArticle("JavaScript", "Programming language");
+        openOptionMenu("Add to reading list");
+        waitForElementAndClick(By.xpath("//*[@text='"+listName+"']"),"Can not find list with name "+listName+"", 30);
+        closeArticle();
+
+
+        //Удаляем одну из статей в списке
+        waitForElementAndClick(By.xpath("//android.widget.FrameLayout[@content-desc='My lists']"), "Can not press 'My lists'", 15);
+        waitForElementAndClick(By.xpath("//*[@text='"+listName+"']"), "Can not find list with name "+listName+"", 30);
+        swipeElementToLeft(By.xpath("//*[@text='Java (programming language)']"), "Can not delete article");
+        waitForElementNotPresent(By.xpath("//*[@text='Java (programming language)']"), "element not found", 15);
+        waitForElementPresent(By.xpath("//*[@text='JavaScript']"), "Can not find name article", 15);
+
+        //Переходим в оставшуюся статью
+        waitForElementAndClick(By.xpath("//*[@text='JavaScript']"), "Can not find name article", 15);
+
+        Assert.assertEquals("Article titles do not match","JavaScript",getTitleArticle());
+    }
 
 
 }
