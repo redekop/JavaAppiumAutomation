@@ -1,151 +1,111 @@
+import lib.CoreTestCase;
+import lib.ui.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ScreenOrientation;
-import org.openqa.selenium.WebElement;
 
-import java.util.List;
-
-import static java.lang.Thread.sleep;
-
-public class FirstTest extends BaseTest {
+public class FirstTest extends CoreTestCase {
 
     private String someWord = "word";
 
+    private MainPageObject mainPageObject;
+
+
+    protected void setUp() throws Exception {
+        super.setUp();
+        mainPageObject = new MainPageObject(driver);
+    }
 
     @Test
-    public void firstTest() {
-            waitForElementAndClick(By.xpath("//*[contains(@text, 'Search Wikipedia')]"), "error_search", 7);
-            waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Java","error_input", 7);
-            waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
-                    "error_element", 15);
+    public void testSearct() {
+        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        searchPageObject.initSearchInput();
+        searchPageObject.typeSearchLine("Java");
+        searchPageObject.waitForSearchResult("Object-oriented programming language");
     }
 
 
     @Test
     public void testCancelSearch() {
-        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 10);
-        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Java","error_input", 7);
-        waitForElementAndClear(By.id("org.wikipedia:id/search_src_text"), "sdf", 10);
-        waitForElementAndClick(By.id("org.wikipedia:id/search_close_btn"), "err_id_close_btn", 10);
-        waitForElementNotPresent(By.id("org.wikipedia:id/search_close_btn"), "search_close_btn is visible", 10);
+        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        searchPageObject.initSearchInput();
+        searchPageObject.waitForCancelButtonToAppear();
+        searchPageObject.clickCancelSearch();
+        searchPageObject.waitForCancelButtonToDisappear();
     }
 
 
     @Test
     public void testCompareArcicleTitle() {
-        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 10);
-        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Java","error_input", 7);
-        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
-                "err_id_search", 10);
+        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        searchPageObject.initSearchInput();
+        searchPageObject.typeSearchLine("Java");
+        searchPageObject.clickByArticleWithSubstring("Object-oriented programming language");
 
-        WebElement element_title = waitForElementPresent(By.id("org.wikipedia:id/view_page_title_text"), "sdfsfsf", 15);
-        String article_title = element_title.getAttribute("text");
-        Assert.assertEquals("gtrtedref","Java (programming language)",article_title);
+        ArticlePageObject articlePageObject = new ArticlePageObject(driver);
+        String article_title = articlePageObject.getArticleTitle();
 
-    }
-
-
-    @Test
-    public void testCheckTextSearch() {
-        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 10);
-
-        Assert.assertEquals("err","Search…",checkText(
-                By.id("org.wikipedia:id/search_src_text"),
-                "err_text",
-                10,
-                "text"));
-    }
-
-
-    @Test
-    public void testSearchSomeWord() {
-        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err click on search", 10);
-        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Some word","error input value", 10);
-
-        assert waitForAllElementsPresent(By.id("org.wikipedia:id/page_list_item_container"), "", 10).size() >= 1;
-
-        waitForElementAndClick(By.id("org.wikipedia:id/search_close_btn"), "err_id_close_btn", 10);
-
-        waitForElementNotPresent(By.id("org.wikipedia:id/page_list_item_container"), "search_close_btn is visible", 10);
-    }
-
-
-    @Test
-    public void testConteinsSomeWord() {
-        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err click on search", 10);
-        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), someWord,"error input value", 10);
-
-        List <WebElement> elements = waitForAllElementsPresent(By.id("org.wikipedia:id/page_list_item_title"), "err", 10);
-
-        for(WebElement element : elements){
-            assert element.getText().toUpperCase().contains(someWord.toUpperCase());
-        }
+        Assert.assertEquals("gtrtedref", "Java (programming language)", article_title);
 
     }
-
 
 
     @Test
     public void testSwipeArcicle() {
-        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 10);
-        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Appium","error_input", 7);
-        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='Appium']"),
-                "err_id_search", 10);
+        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        searchPageObject.initSearchInput();
+        searchPageObject.typeSearchLine("Appium");
+        searchPageObject.clickByArticleWithSubstring("Appium");
 
-        WebElement element_title = waitForElementPresent(By.id("org.wikipedia:id/view_page_title_text"), "sdfsfsf", 15);
-        element_title.getAttribute("text");
-
-        swipeUpToFindElement(By.xpath("//*[@text='View page in browser1']"), "err", 20);
+        ArticlePageObject articlePageObject = new ArticlePageObject(driver);
+        articlePageObject.waitForTitleElement();
+        articlePageObject.swipeToFooter();
 
     }
+
+
 
 
     @Test
-    public void saveFirstArticleToMyList() {
-        //ищем нужную статью, открываем
-        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
-        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Java","error_input", 7);
-        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
-                "err_id_search", 30);
-         waitForElementPresent(By.id("org.wikipedia:id/view_page_title_text"), "sdfsfsf", 15);
+    public void testSaveFirstArticleToMyList() {
+        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        searchPageObject.initSearchInput();
+        searchPageObject.typeSearchLine("Java");
+        searchPageObject.clickByArticleWithSubstring("Object-oriented programming language");
 
-        //Добавляем статью в папку
-        waitForElementAndClick(By.xpath("//android.widget.ImageView[@content-desc='More options']"), "errr", 30);
-        waitForElementAndClick(By.xpath("//*[@text='Add to reading list']"), "errrrrr", 15);
-        waitForElementAndClick(By.id("org.wikipedia:id/onboarding_button"), "errrr", 15);
-        //чистим поле
-        waitForElementAndClear(By.id("org.wikipedia:id/text_input"), "errr", 15);
-        //заполняем
-        waitForElementAndKeys(By.id("org.wikipedia:id/text_input"), "Learning programming","errr", 15);
-        //Сохраняем статью
-        waitForElementAndClick(By.xpath("//*[@text='OK']"), "errrrrr", 15);
+        ArticlePageObject articlePageObject = new ArticlePageObject(driver);
+        articlePageObject.waitForTitleElement();
 
-        //Закрываем статью
-        waitForElementAndClick(By.xpath("//android.widget.ImageButton[@content-desc='Navigate up']"), "errr", 15);
-        //Переходим в списки
-        waitForElementAndClick(By.xpath("//android.widget.FrameLayout[@content-desc='My lists']"), "errr", 15);
-        //Удаляем список
-        waitForElementAndClick(By.xpath("//*[@text='Learning programming']"), "errrrrr", 30);
+        String article_title = articlePageObject.getArticleTitle();
+        String name_of_folder = "Learning programming";
 
-        swipeElementToLeft(By.xpath("//*[@text='Java (programming language)']"), "sdfsfsf");
-        waitForElementNotPresent(By.xpath("//*[@text='Java (programming language)']"), "sdfsfsf", 15);
+        articlePageObject.addArticleToMyList(name_of_folder);
+        articlePageObject.closeArticle();
+
+        NavigationUI navigationUI = new NavigationUI(driver);
+        navigationUI.clickMyList();
+
+        MyListsPageObject myListsPageObject = new MyListsPageObject(driver);
+        myListsPageObject.openFolderByName(name_of_folder);
+
+        myListsPageObject.swipeByArticleToDelete(article_title);
+
+
+
+
     }
-
 
 
     @Test
     public void testAmountOfNotEmptySearch() {
         String seacrcLine = "Linkin park Discography";
         String searchResultLocator = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_container']";
-
-        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
-        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), seacrcLine,"error_input", 7);
-        waitForElementPresent(By.xpath(searchResultLocator), "Can not find anything by request " + seacrcLine, 20);
-
-        int amountOfSearchResults = getAmountOfElements(By.xpath(searchResultLocator));
-
-        Assert.assertTrue("We found too few results!", amountOfSearchResults>0);
+        mainPageObject.waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
+        mainPageObject.waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), seacrcLine, "error_input", 7);
+        mainPageObject.waitForElementPresent(By.xpath(searchResultLocator), "Can not find anything by request " + seacrcLine, 20);
+        int amountOfSearchResults = mainPageObject.getAmountOfElements(By.xpath(searchResultLocator));
+        Assert.assertTrue("We found too few results!", amountOfSearchResults > 0);
 
     }
 
@@ -155,91 +115,111 @@ public class FirstTest extends BaseTest {
         String seacrcLine = "dfghjklasdfertyuio";
         String searchResultLocator = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_container']";
         String emptyResultLabel = "//*[@text='No results found']";
-
-        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
-        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), seacrcLine,"error_input", 7);
-
-        waitForElementPresent(By.xpath(emptyResultLabel), "Can not find empty result", 20);
-
-        assertElementNotPresent(By.xpath(searchResultLocator), "We have found some results result by request " + seacrcLine);
+        mainPageObject.waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
+        mainPageObject.waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), seacrcLine, "error_input", 7);
+        mainPageObject.waitForElementPresent(By.xpath(emptyResultLabel), "Can not find empty result", 20);
+        mainPageObject.assertElementNotPresent(By.xpath(searchResultLocator), "We have found some results result by request " + seacrcLine);
 
     }
 
 
     @Test
-    public void assertTitleTest() {
+    public void testAssertTitleTest() {
         String search_word = "JavaScript";
-        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
-        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), search_word,"error_input", 7);
-        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Programming language']"),
+        mainPageObject.waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
+        mainPageObject.waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), search_word, "error_input", 7);
+        mainPageObject.waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Programming language']"),
                 "err_id_search", 30);
-
-        assertElementPresentWithoutWait(By.id("org.wikipedia:id/view_page_title_text"), search_word, "Title should be - " + search_word);
+        mainPageObject.assertElementPresentWithoutWait(By.id("org.wikipedia:id/view_page_title_text"), search_word, "Title should be - " + search_word);
 
     }
 
 
     @Test
     public void testChangeScreenOrientationOnSearchResults() {
-        searchAndOpenArticle("Java", "Object-oriented programming language");
-        String title_before_rotation = getElementAttribute(
-                By.id("org.wikipedia:id/view_page_title_text"),"text", "Can not find title of article", 15);
-
+        mainPageObject.searchAndOpenArticle("Java", "Object-oriented programming language");
+        String title_before_rotation = mainPageObject.getElementAttribute(
+                By.id("org.wikipedia:id/view_page_title_text"), "text", "Can not find title of article", 15);
         driver.rotate(ScreenOrientation.LANDSCAPE);
-        String title_after_rotation = getElementAttribute(
-                By.id("org.wikipedia:id/view_page_title_text"),"text", "Can not find title of article", 15);
+        String title_after_rotation = mainPageObject.getElementAttribute(
+                By.id("org.wikipedia:id/view_page_title_text"), "text", "Can not find title of article", 15);
         Assert.assertEquals("article title have been change after screen rotation", title_before_rotation, title_after_rotation);
-
         driver.rotate(ScreenOrientation.PORTRAIT);
-        String title_after_second_rotation = getElementAttribute(
-                By.id("org.wikipedia:id/view_page_title_text"),"text", "Can not find title of article", 15);
+        String title_after_second_rotation = mainPageObject.getElementAttribute(
+                By.id("org.wikipedia:id/view_page_title_text"), "text", "Can not find title of article", 15);
         Assert.assertEquals("article title have been change after screen rotation", title_before_rotation, title_after_second_rotation);
     }
 
-    
+
     @Test
     public void testCheckSearchArticleInBackgraund() {
-        waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
-        waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Java","error_input", 7);
-        waitForElementPresent(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+        mainPageObject.waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 20);
+        mainPageObject.waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Java", "error_input", 7);
+        mainPageObject.waitForElementPresent(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
                 "err_id_search", 30);
-
         driver.runAppInBackground(2);
-
-        waitForElementPresent(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+        mainPageObject.waitForElementPresent(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
                 "err_id_search", 30);
     }
 
 
     @Test
-    public void saveTwoArticleToMyList() {
+    public void testSaveTwoArticleToMyList() {
         String listName = "Learning programming";
-
         //Сохраняем две статьи в одну папку
-        searchAndOpenArticle("Java", "Object-oriented programming language");
-        createNewReadingListAndSaveArticle("Learning programming");
-        closeArticle();
-
-        searchAndOpenArticle("JavaScript", "Programming language");
-        openOptionMenu("Add to reading list");
-        waitForElementAndClick(By.xpath("//*[@text='"+listName+"']"),"Can not find list with name "+listName+"", 30);
-        closeArticle();
-
-
+        mainPageObject.searchAndOpenArticle("Java", "Object-oriented programming language");
+        mainPageObject.createNewReadingListAndSaveArticle("Learning programming");
+        mainPageObject.closeArticle();
+        mainPageObject.searchAndOpenArticle("JavaScript", "Programming language");
+        mainPageObject.openOptionMenu("Add to reading list");
+        mainPageObject.waitForElementAndClick(By.xpath("//*[@text='" + listName + "']"), "Can not find list with name " + listName + "", 30);
+        mainPageObject.closeArticle();
         //Удаляем одну из статей в списке
-        waitForElementAndClick(By.xpath("//android.widget.FrameLayout[@content-desc='My lists']"), "Can not press 'My lists'", 15);
-        waitForElementAndClick(By.xpath("//*[@text='"+listName+"']"), "Can not find list with name "+listName+"", 30);
-        swipeElementToLeft(By.xpath("//*[@text='Java (programming language)']"), "Can not delete article");
-        waitForElementNotPresent(By.xpath("//*[@text='Java (programming language)']"), "element not found", 15);
-        waitForElementPresent(By.xpath("//*[@text='JavaScript']"), "Can not find name article", 15);
-
+        mainPageObject.waitForElementAndClick(By.xpath("//android.widget.FrameLayout[@content-desc='My lists']"), "Can not press 'My lists'", 15);
+        mainPageObject.waitForElementAndClick(By.xpath("//*[@text='" + listName + "']"), "Can not find list with name " + listName + "", 30);
+        mainPageObject.swipeElementToLeft(By.xpath("//*[@text='Java (programming language)']"), "Can not delete article");
+        mainPageObject.waitForElementNotPresent(By.xpath("//*[@text='Java (programming language)']"), "element not found", 15);
+        mainPageObject.waitForElementPresent(By.xpath("//*[@text='JavaScript']"), "Can not find name article", 15);
         //Переходим в оставшуюся статью
-        waitForElementAndClick(By.xpath("//*[@text='JavaScript']"), "Can not find name article", 15);
-
+        mainPageObject.waitForElementAndClick(By.xpath("//*[@text='JavaScript']"), "Can not find name article", 15);
         Assert.assertEquals("Article titles do not match",
                 "JavaScript",
-                getElementAttribute(By.id("org.wikipedia:id/view_page_title_text"),"text", "Can not find attribute", 15));
+                mainPageObject.getElementAttribute(By.id("org.wikipedia:id/view_page_title_text"), "text", "Can not find attribute", 15));
     }
 
+
+
+    //    @Test
+//    public void testCheckTextSearch() {
+//        mainPageObject.waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err_id_search", 10);
+//        Assert.assertEquals("err", "Search…", mainPageObject.checkText(
+//                By.id("org.wikipedia:id/search_src_text"),
+//                "err_text",
+//                10,
+//                "text"));
+//    }
+//    @Test
+//    public void testSearchSomeWord() {
+//        mainPageObject.waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err click on search", 10);
+//        mainPageObject.waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), "Some word","error input value", 10);
+//
+//        assert mainPageObject.waitForAllElementsPresent(By.id("org.wikipedia:id/page_list_item_container"), "", 10).size() >= 1;
+//
+//        mainPageObject.waitForElementAndClick(By.id("org.wikipedia:id/search_close_btn"), "err_id_close_btn", 10);
+//
+//        mainPageObject.waitForElementNotPresent(By.id("org.wikipedia:id/page_list_item_container"), "search_close_btn is visible", 10);
+//    }
+
+
+//    @Test
+//    public void testConteinsSomeWord() {
+//        mainPageObject.waitForElementAndClick(By.id("org.wikipedia:id/search_container"), "err click on search", 10);
+//        mainPageObject.waitForElementAndKeys(By.xpath("//*[contains(@text, 'Search…')]"), someWord, "error input value", 10);
+//        List<WebElement> elements = mainPageObject.waitForAllElementsPresent(By.id("org.wikipedia:id/page_list_item_title"), "err", 10);
+//        for (WebElement element : elements) {
+//            assert element.getText().toUpperCase().contains(someWord.toUpperCase());
+//        }
+//
+//    }
 
 }

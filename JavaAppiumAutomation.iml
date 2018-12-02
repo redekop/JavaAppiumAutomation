@@ -10,5 +10,15 @@
     <orderEntry type="library" name="java-client-4.1.2" level="project" />
     <orderEntry type="library" name="junit-4.12" level="project" />
     <orderEntry type="library" name="selenium-server-standalone-3.4.0" level="project" />
+    <orderEntry type="module-library">
+      <library name="testng">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/testng.jar!/" />
+          <root url="jar://$MODULE_DIR$/libs/jcommander.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
