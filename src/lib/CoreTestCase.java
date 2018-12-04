@@ -19,18 +19,21 @@ public class CoreTestCase extends TestCase {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platformName", "Android");
         capabilities.setCapability("deviceName", "Samsung");
-        capabilities.setCapability("platformVersion", "4.4.4");
+        capabilities.setCapability("platformVersion", "6.0");
         capabilities.setCapability("automationName", "appium");
         capabilities.setCapability("appPackage", "org.wikipedia");
         capabilities.setCapability("appActivity", ".main.MainActivity");
         capabilities.setCapability("app", "E:\\GIT\\JavaAppiumAutomation\\apk\\org.wikipedia.apk");
+
         driver = new AndroidDriver(new URL(AppiumURL), capabilities);
 
-        //Как вариант перед каждым тестом проверять текущую ориентацию
-        ScreenOrientation screenOrientation = driver.getOrientation();
-        if (screenOrientation == ScreenOrientation.LANDSCAPE) {
-            driver.rotate(ScreenOrientation.PORTRAIT);
-        }
+        this.rotateScreenPortrait();
+
+//        //Как вариант перед каждым тестом проверять текущую ориентацию
+//        ScreenOrientation screenOrientation = driver.getOrientation();
+//        if (screenOrientation == ScreenOrientation.LANDSCAPE) {
+//            driver.rotate(ScreenOrientation.PORTRAIT);
+//        }
     }
 
 
@@ -38,5 +41,18 @@ public class CoreTestCase extends TestCase {
     protected void tearDown() throws Exception {
         driver.quit();
         super.tearDown();
+    }
+
+
+    protected void rotateScreenPortrait() {
+        driver.rotate(ScreenOrientation.PORTRAIT);
+    }
+
+    protected void rotateScreenLandscape() {
+        driver.rotate(ScreenOrientation.LANDSCAPE);
+    }
+
+    protected void backgroundApp(int seconds) {
+        driver.runAppInBackground(seconds);
     }
 }
