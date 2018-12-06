@@ -2,6 +2,9 @@ package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
+import java.util.List;
 
 public class SearchPageObject extends MainPageObject {
 
@@ -11,7 +14,9 @@ public class SearchPageObject extends MainPageObject {
             SEARCH_CANCEL_BUTTON = "org.wikipedia:id/search_close_btn",
             SEARCH_RESULT_BY_SUBSTRING_TPL = "//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='{SUBSTRING}']",
             SEARCH_RESULT_ELEMENT = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_container']",
-            SEARCH_EMPTY_RESULT_ELEMENT = "//*[@text='No results found']";
+            SEARCH_EMPTY_RESULT_ELEMENT = "//*[@text='No results found']",
+            SEARCH_SRC_TEXT = "org.wikipedia:id/search_src_text",
+            SEARCH_PAGE_LIST_TITLE = "org.wikipedia:id/page_list_item_title";
 
 
     public SearchPageObject(AppiumDriver driver) {
@@ -25,7 +30,9 @@ public class SearchPageObject extends MainPageObject {
     }
     /* TEMPLATES METHODS */
 
-
+    public String checkSearchText() {
+        return getElementAttribute(By.id(SEARCH_SRC_TEXT), "text","err_text", 20);
+    }
 
     public void initSearchInput() {
         this.waitForElementAndClick(By.xpath(SEARCH_INIT_ELEMENT), "Cannot find and click search init element", 10);
@@ -65,12 +72,18 @@ public class SearchPageObject extends MainPageObject {
         return this.getAmountOfElements(By.xpath(SEARCH_RESULT_ELEMENT));
     }
 
+    public void checkWordsInAllListTitle (String word) {
+        List<WebElement> elements = this.getListOfElements(By.id(SEARCH_PAGE_LIST_TITLE));
+        for (WebElement element : elements) {
+            assert element.getText().toUpperCase().contains(word.toUpperCase());
+        }
+    }
+
     public void waitForEmptyResultLabel() {
         this.waitForElementPresent(By.xpath(SEARCH_EMPTY_RESULT_ELEMENT), "Cannot find empty result element", 15);
     }
 
     public void assertThereIsNoResultOfSearch() {
-        String searchResultLocator = "//*[@resource-id='org.wikipedia:id/search_results_list']//*[@resource-id='org.wikipedia:id/page_list_item_container']";
         this.assertElementNotPresent(By.xpath(SEARCH_RESULT_ELEMENT), "We supposed not to find any result");
     }
 

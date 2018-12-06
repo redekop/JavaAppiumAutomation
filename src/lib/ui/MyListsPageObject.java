@@ -7,7 +7,8 @@ public class MyListsPageObject extends MainPageObject {
 
     private static final String
             FOLDER_BY_NAME_TPL = "//*[@text='{SUBSTRING}']",
-            ARTICLE_BY_TITLE_TPL = "//*[@text='{SUBSTRING}']";
+            ARTICLE_BY_TITLE_TPL = "//*[@text='{SUBSTRING}']",
+            ARTICLE_NAME_TPL = "//*[@text='{SUBSTRING}']";
 
     public MyListsPageObject(AppiumDriver driver) {
         super(driver);
@@ -18,10 +19,18 @@ public class MyListsPageObject extends MainPageObject {
         return FOLDER_BY_NAME_TPL.replace("{SUBSTRING}", name_of_folder);
     }
 
+    private static String getArticleNameXpathByName(String name_of_folder) {
+        return ARTICLE_NAME_TPL.replace("{SUBSTRING}", name_of_folder);
+    }
+
     private static String getSavedArticleXpathByTitle(String article_title) {
         return ARTICLE_BY_TITLE_TPL.replace("{SUBSTRING}", article_title);
     }
 
+
+    public void openArticle(String name_of_article) {
+        this.waitForElementAndClick(By.xpath(getArticleNameXpathByName(name_of_article)), "Can not find name article", 15);
+    }
 
     public void openFolderByName(String name_of_folder) {
         this.waitForElementAndClick(By.xpath(getFolderXpathByName(name_of_folder)), "Cannot find folder by name " + name_of_folder, 10);

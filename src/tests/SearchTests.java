@@ -48,4 +48,40 @@ public class SearchTests extends CoreTestCase {
         searchPageObject.waitForEmptyResultLabel();
         searchPageObject.assertThereIsNoResultOfSearch();
     }
+
+
+    @Test
+    public void testCheckTextSearch() {
+        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        searchPageObject.initSearchInput();
+        assertEquals("err", "Search…", searchPageObject.checkSearchText());
+    }
+
+
+    @Test
+    public void testSearchSomeWord() {
+        String someWord = "word";
+        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        searchPageObject.initSearchInput();
+        searchPageObject.typeSearchLine(someWord);
+
+        assert searchPageObject.getAmountOfFoundArticle() >= 1;
+        searchPageObject.clickCancelSearch();
+        searchPageObject.initSearchInput();
+    }
+
+
+    @Test
+    public void testCheckConteinsSomeWord() {
+        String someWord = "word";
+        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        searchPageObject.initSearchInput();
+        searchPageObject.typeSearchLine(someWord);
+        searchPageObject.checkWordsInAllListTitle(someWord);
+    }
+
+
+
+
+
 }

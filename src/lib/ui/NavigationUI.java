@@ -15,7 +15,7 @@ public class NavigationUI extends  MainPageObject {
 
     public void clickMyList() {
         //Переходим в списки
-        this.waitForElementAndClick(By.xpath(MY_LIST_LINK), "Cannot find navigation button to my list", 15);
+        this.waitForElementAndClick(By.xpath(MY_LIST_LINK), "Cannot find navigation button to my list", 30);
 
     }
 }

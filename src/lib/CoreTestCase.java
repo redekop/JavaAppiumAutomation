@@ -18,7 +18,7 @@ public class CoreTestCase extends TestCase {
         super.setUp();
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platformName", "Android");
-        capabilities.setCapability("deviceName", "Samsung");
+        capabilities.setCapability("deviceName", "gdxfvdxv");
         capabilities.setCapability("platformVersion", "6.0");
         capabilities.setCapability("automationName", "appium");
         capabilities.setCapability("appPackage", "org.wikipedia");
