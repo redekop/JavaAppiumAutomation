@@ -2,13 +2,14 @@ package tests;
 
 import lib.CoreTestCase;
 import lib.ui.SearchPageObject;
+import lib.ui.factories.SearchPageObjectFarcory;
 import org.junit.Test;
 
 public class SearchTests extends CoreTestCase {
 
     @Test
     public void testSearct() {
-        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        SearchPageObject searchPageObject = SearchPageObjectFarcory.get(driver);
         searchPageObject.initSearchInput();
         searchPageObject.typeSearchLine("Java");
         searchPageObject.waitForSearchResult("Object-oriented programming language");
@@ -17,7 +18,7 @@ public class SearchTests extends CoreTestCase {
 
     @Test
     public void testCancelSearch() {
-        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        SearchPageObject searchPageObject = SearchPageObjectFarcory.get(driver);
         searchPageObject.initSearchInput();
         searchPageObject.waitForCancelButtonToAppear();
         searchPageObject.clickCancelSearch();
@@ -28,7 +29,7 @@ public class SearchTests extends CoreTestCase {
 
     @Test
     public void testAmountOfNotEmptySearch() {
-        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        SearchPageObject searchPageObject = SearchPageObjectFarcory.get(driver);
         searchPageObject.initSearchInput();
         String seacrcLine = "Linkin park Discography";
         searchPageObject.typeSearchLine(seacrcLine);
@@ -41,7 +42,7 @@ public class SearchTests extends CoreTestCase {
 
     @Test
     public void testAmountOfEmptySearch() {
-        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        SearchPageObject searchPageObject = SearchPageObjectFarcory.get(driver);
         searchPageObject.initSearchInput();
         String seacrcLine = "dfghjklasdfertyuio";
         searchPageObject.typeSearchLine(seacrcLine);
@@ -52,7 +53,7 @@ public class SearchTests extends CoreTestCase {
 
     @Test
     public void testCheckTextSearch() {
-        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        SearchPageObject searchPageObject = SearchPageObjectFarcory.get(driver);
         searchPageObject.initSearchInput();
         assertEquals("err", "Search…", searchPageObject.checkSearchText());
     }
@@ -61,7 +62,7 @@ public class SearchTests extends CoreTestCase {
     @Test
     public void testSearchSomeWord() {
         String someWord = "word";
-        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        SearchPageObject searchPageObject = SearchPageObjectFarcory.get(driver);
         searchPageObject.initSearchInput();
         searchPageObject.typeSearchLine(someWord);
 
@@ -74,7 +75,7 @@ public class SearchTests extends CoreTestCase {
     @Test
     public void testCheckConteinsSomeWord() {
         String someWord = "word";
-        SearchPageObject searchPageObject = new SearchPageObject(driver);
+        SearchPageObject searchPageObject = SearchPageObjectFarcory.get(driver);
         searchPageObject.initSearchInput();
         searchPageObject.typeSearchLine(someWord);
         searchPageObject.checkWordsInAllListTitle(someWord);
