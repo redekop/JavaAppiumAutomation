@@ -14,6 +14,10 @@ public class AndroidSearchPageObject extends SearchPageObject {
         SEARCH_EMPTY_RESULT_ELEMENT = "xpath://*[@text='No results found']";
         SEARCH_SRC_TEXT = "id:org.wikipedia:id/search_src_text";
         SEARCH_PAGE_LIST_TITLE = "id:org.wikipedia:id/page_list_item_title";
+
+        SEARCH_RESULT_BY_TITLE_AND_DESCRIPRION_TPL =
+                "xpath://*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='{SUBSTRING1}']/..//*[@text='{SUBSTRING2}']";
+
     }
 
 

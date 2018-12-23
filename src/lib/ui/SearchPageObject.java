@@ -15,7 +15,8 @@ abstract public class SearchPageObject extends MainPageObject {
             SEARCH_RESULT_ELEMENT,
             SEARCH_EMPTY_RESULT_ELEMENT,
             SEARCH_SRC_TEXT,
-            SEARCH_PAGE_LIST_TITLE;
+            SEARCH_PAGE_LIST_TITLE,
+            SEARCH_RESULT_BY_TITLE_AND_DESCRIPRION_TPL;
 
 
     public SearchPageObject(AppiumDriver driver) {
@@ -24,10 +25,17 @@ abstract public class SearchPageObject extends MainPageObject {
 
 
     /* TEMPLATES METHODS */
-    private static String getResultSearchElemant(String substring) {
+    private static String getResultSearchElement(String substring) {
         return SEARCH_RESULT_BY_SUBSTRING_TPL.replace("{SUBSTRING}", substring);
     }
+
+    private static String getResultSearchByTitleAndDescription(String substring1, String substring2) {
+        return SEARCH_RESULT_BY_TITLE_AND_DESCRIPRION_TPL
+                .replace("{SUBSTRING1}", substring1)
+                .replace("{SUBSTRING2}", substring2);
+    }
     /* TEMPLATES METHODS */
+
 
     public String checkSearchText() {
         return getElementAttribute(SEARCH_SRC_TEXT, "text","err_text", 20);
@@ -55,13 +63,18 @@ abstract public class SearchPageObject extends MainPageObject {
     }
 
     public void waitForSearchResult(String substring) {
-        waitForElementPresent(getResultSearchElemant(substring),
+        waitForElementPresent(getResultSearchElement(substring),
                 "Cannot find search result with substring - " + substring, 15);
+    }
+
+    public void waitForElementByTitleAndDescription(String title, String description) {
+        waitForElementPresent(getResultSearchByTitleAndDescription(title, description),
+                "Cannot find search result with title - " + title + " or desctiption - " + description, 15);
     }
 
 
     public void clickByArticleWithSubstring(String substring) {
-        waitForElementAndClick(getResultSearchElemant(substring),
+        waitForElementAndClick(getResultSearchElement(substring),
                 "Cannot find and click search result with substring - " + substring, 15);
     }
 

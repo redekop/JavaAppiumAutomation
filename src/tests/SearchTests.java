@@ -8,11 +8,21 @@ import org.junit.Test;
 public class SearchTests extends CoreTestCase {
 
     @Test
-    public void testSearct() {
+    public void testSearch() {
         SearchPageObject searchPageObject = SearchPageObjectFarcory.get(driver);
         searchPageObject.initSearchInput();
         searchPageObject.typeSearchLine("Java");
         searchPageObject.waitForSearchResult("Object-oriented programming language");
+    }
+
+
+    @Test
+    public void testSearchByTitleAndDescription() {
+        SearchPageObject searchPageObject = SearchPageObjectFarcory.get(driver);
+        searchPageObject.initSearchInput();
+        searchPageObject.typeSearchLine("Java");
+        assert searchPageObject.getAmountOfFoundArticle() >= 3 : "The result should have more articles!";
+        searchPageObject.waitForElementByTitleAndDescription("Java (programming language)", "Object-oriented programming language");
     }
 
 
